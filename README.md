@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+- avoir de temps fixes (non décalable)
+- en création par défaut, faire glisser le planning en cascace, hors temps fixe
+- gérer le temps de travail 8h 18h, tout ce qui dépasse est splitté automatiquement et stacké (les slots ne prennent pas les hauteur réaliste vis à vis de leur durée) 
+- modifier Shift pour remplacer les temps en mode création
 
-## Getting Started
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- pas de gestion d'heure, uniquement du temps. Une tâche à juste une durée, et les tâches s'empilent dans une même journée
+- raccourci pour "replanifier" une tâche (l'envoi dans un backlog à replanifier)
+- le dév redimensionne ses tâches et/ou en ajoute. Ce qui dépasse de 8h arrive devra êter replanifié par le CDP si besoin.
+- un dév ne peut pas "cut" une tâche
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+On laisse la saisie libre. Que ce soit dans la plannif ou côté « modulo ». On afficher une charge de 8h. On peut donc avoir des trou etc.
+Pour que ce soit cohérent, le « tricks » c’est de travailler avec des date et heure, mais de n’afficher que des heures ouvrées (notion transverse à tout Nodevo). Et sans afficher les heures.
+Comme ça, tu n ne perd rien. Si demain on veux faire évoluer le truc pour planifier des heures précises, des réunion fixes, des heures sup, ou même intégrer un Outlook, c’est possible.
+Johann saisira validera des temps de 8h à 18h sans s’en rendre compte et sans que ça dérange personne.
+Au final, le résultat s’est sûrement exactement ce à quoi tu t’attends, et moi je trouve ça tres consistant au niveau des données.
+20 h 21
+Tout le reste ça sera des tricks ux à base de raccourcis clavier et éléments d’interface pour faciliter la saisie
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
