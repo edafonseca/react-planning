@@ -1,14 +1,17 @@
 import { addMilliseconds, addMinutes, endOfDay } from "date-fns";
 
+
+
 export class Slot {
   public id: string;
 
   constructor(
     public from: Date,
     public duration: number, // milliseconds
+    id?: string,
   ) {
     // Generate a unique id for the slot
-    this.id = Math.random().toString(36).substring(7);
+    this.id = id ?? Math.random().toString(36).substring(7);
   }
 
   get to(): Date {
@@ -22,15 +25,19 @@ export class Slot {
   }
 
   public shiftStart(date: Date): Slot {
-    const delta = date.getTime() - this.from.getTime();
+    if (date.getDate() !== this.from.getDate()) {
+      throw new Error("Can not shift slot to a different day");
+    }
 
-    return new Slot(addMilliseconds(this.from, delta), this.duration);
+    this.from = date;
+
+    return this;
   }
 
   public split(date: Date): [Slot, Slot] {
     return [
-      new Slot(this.from, date.getTime() - this.from.getTime()),
-      new Slot(date, this.to.getTime() - date.getTime()),
+      new Slot(this.from, date.getTime() - this.from.getTime(), this.id),
+      new Slot(date, this.to.getTime() - date.getTime(), this.id),
     ];
   }
 
@@ -42,18 +49,18 @@ export class Slot {
     const filter = (slots: Slot[]) => slots.filter((s) => s.from < s.to);
 
     if (this.from > slot.from) {
-      return filter([new Slot(slot.to, this.to.getTime() - slot.to.getTime())]);
+      return filter([new Slot(slot.to, this.to.getTime() - slot.to.getTime(), this.id)]);
     }
 
     if (this.to > slot.to) {
       return filter([
-        new Slot(this.from, slot.from.getTime() - this.from.getTime()),
-        new Slot(slot.to, this.to.getTime() - slot.to.getTime()),
+        new Slot(this.from, slot.from.getTime() - this.from.getTime(), this.id),
+        new Slot(slot.to, this.to.getTime() - slot.to.getTime(), this.id),
       ]);
     }
 
     return filter([
-      new Slot(this.from, slot.from.getTime() - this.from.getTime()),
+      new Slot(this.from, slot.from.getTime() - this.from.getTime(), this.id),
     ]);
   }
 

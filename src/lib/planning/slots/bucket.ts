@@ -17,21 +17,26 @@ export class Bucket {
   }
 
   public interpose(slot: Slot): void {
-    const rest: Slot[] = [];
+    this.slots.sort((a, b) => a.from.getTime() - b.from.getTime());
 
-    this.slots = this.slots.flatMap((s) => {
-      const subSlots = s.interpose(slot);
+    const toAdd = [...this.slots.filter((s) => s.to >= slot.from)];
+    this.slots = [...this.slots.filter((s) => s.to < slot.from), slot];
 
-      subSlots
-        .filter((subSlot) => !subSlot.equals(s))
-        .forEach((subSlot) => rest.push(subSlot));
-      // subSlots.filter((subSlot) => !subSlot.equals(s)).forEach((subSlot) => this.interpose(subSlot));
+    let next = toAdd.shift();
+    let b: Slot | undefined = undefined;
 
-      return subSlots.filter((subSlot) => subSlot.equals(s));
-    });
+    while (undefined !== next) {
+      this.slots.forEach((s) => {
+        [next, b] = next!.interpose(s);
 
-    this.slots.push(slot);
+        if (b !== undefined) {
+          toAdd.unshift(b);
+        }
+      });
+      this.slots.push(next);
 
-    rest.reverse().forEach((slot) => this.interpose(slot));
+      next = toAdd.shift();
+      this.slots.sort((a, b) => a.from.getTime() - b.from.getTime());
+    }
   }
 }
