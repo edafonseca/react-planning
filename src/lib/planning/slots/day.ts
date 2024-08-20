@@ -1,51 +1,36 @@
-import { Bucket } from "./bucket";
+import { ViewRangeInterface } from "../ViewrangeInterface";
+import { Bucket, Diff } from "./bucket";
+import { CalendarSlot } from "./calendar-slot";
 import { Slot } from "./slot";
-import { Time } from "./time";
 
 export class Day {
-  times: Time[] = [];
   id: string;
+  private bucket: Bucket;
 
-  constructor() {
+  constructor(private viewRange: ViewRangeInterface) {
     this.id = Math.random().toString(36).substring(7);
+    this.bucket = new Bucket();
   }
 
-  public addTime(time: Time, insertMode: "interpose" | "cut"): void {
-    const map: { [timeId: string]: string[] } = this.times.reduce(
-      (acc, t) => ({
-        ...acc,
-        [t.id]: t
-          .getSlots()
-          .reduce((sAcc, s) => ({ ...sAcc, [s.id]: true }), {}),
-      }),
-      {},
-    );
+  public addSlot(slot: Slot, insertMode?: "interpose" | "cut"): Diff {
+    const calendarSlot = new CalendarSlot(slot, this.viewRange);
 
-    const bucket = new Bucket(this.times.flatMap((t) => t.getSlots()));
+    if (undefined === insertMode) {
+      return this.bucket.addSlot(calendarSlot);
+    }
 
-    time.getSlots().forEach((slot) => {
-      insertMode === "cut" && bucket.cut(slot);
-      insertMode === "interpose" && bucket.interpose(slot);
-    });
+    if ("cut" === insertMode) {
+      return this.bucket.cut(calendarSlot);
+    }
 
-    const slotsById: { [slotId: string]: Slot[] } = bucket.slots.reduce(
-      (acc, s) => ({ ...acc, [s.id ?? "0"]: [...(acc[s.id] ?? []), s] }),
-      {},
-    );
+    if ("interpose" === insertMode) {
+      return this.bucket.interpose(calendarSlot);
+    }
 
-    this.times = [];
-    Object.keys(map).forEach((timeId) => {
-      const t = new Time(timeId);
+    throw new Error("Invalid insert mode");
+  }
 
-      Object.keys(map[timeId])
-        .map((id) => slotsById[id])
-        .forEach((slots) => {
-          slots && slots.forEach((slot) => t.addSlot(slot));
-        });
-
-      this.times.push(t);
-    });
-
-    this.times.push(time);
+  public getSlots(): Slot[] {
+    return this.bucket.slots.map((s) => s.slot);
   }
 }

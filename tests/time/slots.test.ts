@@ -1,5 +1,6 @@
-import { Slot } from '@/lib/planning/slots/slot';
-import { Time } from '@/lib/planning/slots/time';
+import { ViewRange } from '@/lib/planning/calendar';
+import { CalendarSlot } from '@/lib/planning/slots/calendar-slot';
+import { ManipulableSlotInterface, Slot } from '@/lib/planning/slots/slot';
 import { addMinutes, endOfDay } from 'date-fns';
 import { format } from 'date-fns/format';
 
@@ -88,21 +89,15 @@ describe('Slots can overlap', () => {
 //   });
 // });
 
-export function thereIsASlot(details: { startHour?: number; startMinutes?: number, minutes?: number; }) {
+export function thereIsASlot(details: { startHour?: number; startMinutes?: number, minutes?: number; }): ManipulableSlotInterface {
   const slot = new Slot(
     new Date(2021, 1, 1, details.startHour || 0, details.startMinutes || 0),
     (details.minutes || 60) * 60 * 1000,
     // thereIsATime(),
   );
-  return slot;
+  return new CalendarSlot(slot, new ViewRange(new Date(), new Date()));
 }
 
-function thereIsATime() {
-  const time = new Time();
-
-  return time;
-}
-
-function shiftSlot(slot: Slot, details: { minutes: number; }) {
+function shiftSlot(slot: ManipulableSlotInterface, details: { minutes: number; }) {
   slot.shiftStart(addMinutes(slot.from, details.minutes));
 }

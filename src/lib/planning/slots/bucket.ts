@@ -1,29 +1,58 @@
-import { Slot } from "./slot";
+import { CalendarSlot } from "./calendar-slot";
+import { ManipulableSlotInterface, SlotInterface } from "./slot";
+
+export class Diff {
+  private oldSlots: SlotInterface[] = [];
+  private newSlots: SlotInterface[] = [];
+
+  constructor(bucket: Bucket) {
+    this.oldSlots = [...bucket.slots];
+  }
+  
+  public diff(bucket: Bucket): Diff {
+    this.newSlots = [...bucket.slots];
+
+    return this;
+  }
+
+  public all(): SlotInterface[] {
+    return this.newSlots
+      .filter((s) => !this.oldSlots.some((bs) => bs.equals(s)))
+  }
+}
 
 export class Bucket {
-  constructor(public slots: Slot[] = []) {}
 
-  public addSlot(slot: Slot): void {
+  constructor(public slots: ManipulableSlotInterface[] = []) {
+  }
+
+  public addSlot(slot: CalendarSlot): Diff {
+    const diff = new Diff(this); 
+
     this.slots.push(slot);
+    
+    return diff.diff(this);
   }
 
-  public getOverlaping(slot: Slot): Slot[] {
-    return this.slots.filter((s) => s.overlaps(slot));
-  }
+  public cut(slot: ManipulableSlotInterface): Diff {
+    const diff = new Diff(this); 
 
-  public cut(slot: Slot): void {
     this.slots = this.slots.flatMap((s) => s.cut(slot));
     this.slots.push(slot);
+
+    return diff.diff(this);
   }
 
-  public interpose(slot: Slot): void {
+  public interpose(slot: ManipulableSlotInterface): Diff {
+    const diff = new Diff(this); 
+
     this.slots.sort((a, b) => a.from.getTime() - b.from.getTime());
 
     const toAdd = [...this.slots.filter((s) => s.to >= slot.from)];
     this.slots = [...this.slots.filter((s) => s.to < slot.from), slot];
 
     let next = toAdd.shift();
-    let b: Slot | undefined = undefined;
+    let b: ManipulableSlotInterface | undefined = undefined;
 
     while (undefined !== next) {
       this.slots.forEach((s) => {
@@ -38,5 +67,7 @@ export class Bucket {
       next = toAdd.shift();
       this.slots.sort((a, b) => a.from.getTime() - b.from.getTime());
     }
+
+    return diff.diff(this);
   }
 }

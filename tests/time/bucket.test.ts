@@ -1,4 +1,6 @@
+import { ViewRange } from "@/lib/planning/calendar";
 import { Bucket } from "@/lib/planning/slots/bucket";
+import { CalendarSlot } from "@/lib/planning/slots/calendar-slot";
 import { Slot } from "@/lib/planning/slots/slot";
 import { addHours, startOfDay } from "date-fns";
 
@@ -124,5 +126,5 @@ const convertStringToSlots = (str: string) => {
     }
   }
 
-  return slots;
+  return slots.map(s => new CalendarSlot(s, new ViewRange(new Date(), new Date())));
 };

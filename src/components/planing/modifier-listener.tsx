@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { context } from "./planning-context";
 
-export type Modifiers = "shift" | "ctrl" | "alt";
+export type Modifiers = "Shift" | "Ctrl" | "Alt";
 
 function isModifier(e: KeyboardEvent) {
   return ["Shift", "Ctrl", "Alt", "Meta"].includes(e.key);
