@@ -1,3 +1,5 @@
+import { endOfDay, startOfDay } from "date-fns";
+
 export interface SlotInterface {
   from: Date;
   duration: number;
@@ -33,6 +35,14 @@ export class Slot implements SlotInterface {
       this.duration === s.duration &&
       this.id === s.id
     );
+  }
+
+  public isInDay(day: Date) {
+    const start = startOfDay(day);
+    const end = endOfDay(day);
+    const to = new Date(this.from.getTime() + this.duration);
+
+    return start <= this.from && this.from <= end;
   }
 
   public clone(): Slot {

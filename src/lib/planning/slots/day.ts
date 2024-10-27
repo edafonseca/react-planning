@@ -1,4 +1,4 @@
-import { ViewRangeInterface } from "../ViewrangeInterface";
+import { ViewRangeInterface } from "../viewrange/ViewrangeInterface";
 import { Bucket, Diff } from "./bucket";
 import { CalendarSlot } from "./calendar-slot";
 import { Slot } from "./slot";

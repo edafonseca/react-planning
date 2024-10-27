@@ -1,4 +1,5 @@
-import { ViewRangeInterface } from "../ViewrangeInterface";
+import { endOfDay } from "date-fns";
+import { ViewRangeInterface } from "../viewrange/ViewrangeInterface";
 import { ManipulableSlotInterface, Slot, SlotInterface } from "./slot";
 
 export class CalendarSlot implements ManipulableSlotInterface {
@@ -42,7 +43,11 @@ export class CalendarSlot implements ManipulableSlotInterface {
 
   public shiftStart(date: Date): ManipulableSlotInterface {
     if (date.getDate() !== this.from.getDate()) {
-      throw new Error("Can not shift slot to a different day");
+      // @todo : à vérifier
+      this.from = endOfDay(date);
+
+      return this;
+      // throw new Error("Can not shift slot to a different day");
     }
 
     this.from = date;

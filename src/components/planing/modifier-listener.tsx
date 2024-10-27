@@ -8,13 +8,29 @@ function isModifier(e: KeyboardEvent) {
 }
 
 export const ModifierListener: React.FC = () => {
-  const { setModifier } = useContext(context);
+  const { setModifier, placeholderDuration, setPlaceholderDuration } = useContext(context);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (isModifier(e)) {
         setModifier(e.key as Modifiers);
       }
+
+      if (e.key === "a") {
+        const duration = placeholderDuration * 2;
+        setPlaceholderDuration(Math.min(duration, 8 * 60 * 60 * 1000));
+      }
+      if (e.key === "d") {
+        const duration = placeholderDuration / 2;
+        setPlaceholderDuration(Math.max(duration, 30 * 60 * 1000));
+      }
+
+      [1, 2, 3, 4, 5, 6, 7, 8].forEach((key) => {
+        if (e.key.toString() === key.toString()) {
+          setPlaceholderDuration(key * 60 * 60 * 1000);
+        }
+      })
+        
     };
 
     const onKeyUp = (e: KeyboardEvent) => {
@@ -30,7 +46,7 @@ export const ModifierListener: React.FC = () => {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("keyup", onKeyUp);
     };
-  }, [setModifier]);
+  }, [setModifier, placeholderDuration, setPlaceholderDuration]);
 
   return null;
 };
