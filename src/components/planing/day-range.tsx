@@ -1,4 +1,11 @@
-import { MouseEvent, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  MouseEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Day } from "@/lib/planning/slots/day";
 import { Slot } from "@/lib/planning/slots/slot";
 import { context } from "./planning-context";
@@ -15,10 +22,15 @@ function getRelativePosition(rect: DOMRect, clientX: number, clientY: number) {
 
 type DayRangeProps = {
   calendar: Calendar;
-  date: Date,
+  date: Date;
 };
 
-export const DayRange: React.FC<DayRangeProps> = ({ calendar, date }) => {
+export const DayRange: React.FC<DayRangeProps> = ({
+  calendar,
+  date,
+  placeholder,
+  setPlaceholder,
+}) => {
   const [interacting, setInteracting] = useState(false);
   const [rect, setRect] = useState<DOMRect | null>(null);
   const [creatingSlot, setCreatingSlot] = useState<Slot | null>(null);
@@ -27,7 +39,10 @@ export const DayRange: React.FC<DayRangeProps> = ({ calendar, date }) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [hovering, setHovering] = useState(false);
   const [cursorPosition, setCursorPosition] = useState<any>({ x: 0, y: 0 });
-  const { modifier, placeholderDuration, placeholderSlot, setPlaceholderSlot } = useContext(context);
+  const { modifier, placeholderDuration } = useContext(context);
+
+  const placeholderSlot = placeholder;
+  const setPlaceholderSlot = setPlaceholder;
 
   const day = useRef<Day>(new Day(calendar.viewrange));
   const dayRef = useRef<HTMLDivElement>(null);
@@ -56,7 +71,12 @@ export const DayRange: React.FC<DayRangeProps> = ({ calendar, date }) => {
     setInteracting(true);
 
     const p = getRelativePosition(rect, e.clientX, e.clientY);
-    const pointingDate = calendar.viewrange.getDateFromRelativePosition(p.y, date, "floor", 30);
+    const pointingDate = calendar.viewrange.getDateFromRelativePosition(
+      p.y,
+      date,
+      "floor",
+      30,
+    );
     setStartDate(pointingDate);
     handleInteractionOnMouseMouve(pointingDate);
 
@@ -149,7 +169,6 @@ export const DayRange: React.FC<DayRangeProps> = ({ calendar, date }) => {
   };
 
   const select = (slot: Slot) => {
-    // console.log(slot);
     setSelectedSlot(slot);
   };
 
@@ -169,16 +188,16 @@ export const DayRange: React.FC<DayRangeProps> = ({ calendar, date }) => {
       }
     }
 
-    if (placeholderSlot && placeholderSlot.isInDay(date)) {
+    if (placeholderSlot) {
       preview.addSlot(placeholderSlot, "cut");
     }
 
     return preview.getSlots();
-  }, [calendar, creatingSlot, placeholderSlot, modifier, date]);
+  }, [calendar, creatingSlot, placeholderSlot, modifier]);
 
   return (
     <div className="relative flex-1 flex flex-col">
-      <div>{format(date, 'dd/MM/yyyy')}</div>
+      <div>{format(date, "dd/MM/yyyy")}</div>
       <div
         className="border flex-1 relative"
         onMouseEnter={onMouseEnter}

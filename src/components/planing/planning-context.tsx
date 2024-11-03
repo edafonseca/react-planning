@@ -1,10 +1,7 @@
 import { createContext, useEffect, useMemo, useState } from "react";
 import { Modifiers } from "./modifier-listener";
-import { Slot } from "@/lib/planning/slots/slot";
 
 type PlanningContextType = {
-  placeholderSlot?: Slot,
-  setPlaceholderSlot: (slot: Slot | null) => void,
   placeholderDuration: number;
   setPlaceholderDuration: (placeholderDuration: number) => void;
   modifier: Modifiers | null;
@@ -12,7 +9,6 @@ type PlanningContextType = {
 };
 
 export const context = createContext<PlanningContextType>({
-  setPlaceholderSlot: (slot: Slot) => null,
   placeholderDuration: 30 * 60 * 1000,
   setPlaceholderDuration: () => {},
   modifier: null,
@@ -20,30 +16,23 @@ export const context = createContext<PlanningContextType>({
 });
 
 type Props = {
-  children?: React.ReactNode
+  children?: React.ReactNode;
 };
 
 export const PlanningContext: React.FC<Props> = ({ children }) => {
-  const [placeholderSlot, setPlaceholderSlot] = useState<Slot | null>(null);
-  const [placeholderDuration, setPlaceholderDuration] = useState(30 * 60 * 1000);
+  const [placeholderDuration, setPlaceholderDuration] = useState(
+    30 * 60 * 1000,
+  );
   const [modifier, setModifier] = useState<Modifiers | null>(null);
-
-  useEffect(() => {
-    if (placeholderSlot) {
-      setPlaceholderSlot(new Slot(placeholderSlot.from, placeholderDuration));
-    }
-  }, [placeholderDuration]);
 
   const value = useMemo(
     () => ({
-      placeholderSlot, 
-      setPlaceholderSlot,
       placeholderDuration,
       setPlaceholderDuration,
       modifier,
-      setModifier
+      setModifier,
     }),
-    [modifier, setModifier, placeholderDuration, setPlaceholderDuration, placeholderSlot, setPlaceholderSlot],
+    [modifier, setModifier, placeholderDuration, setPlaceholderDuration],
   );
 
   return <context.Provider value={value}>{children}</context.Provider>;
