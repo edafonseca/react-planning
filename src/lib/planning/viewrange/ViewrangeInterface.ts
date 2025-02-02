@@ -15,4 +15,5 @@ export interface ViewRangeInterface {
 
   // Computes the duration between two dates (usually start and end of a slot)
   getDurationBetween(from: Date, to: Date): number;
+  
 }

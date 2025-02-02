@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { context } from "./planning-context";
+import { context, useCalendar } from "./planning-provider";
 
 export type Modifiers = "Shift" | "Ctrl" | "Alt";
 
@@ -8,6 +8,8 @@ function isModifier(e: KeyboardEvent) {
 }
 
 export const ModifierListener: React.FC = () => {
+  const { calendar } = useCalendar();
+
   const { setModifier, placeholderDuration, setPlaceholderDuration } = useContext(context);
 
   useEffect(() => {
@@ -23,6 +25,14 @@ export const ModifierListener: React.FC = () => {
       if (e.key === "d") {
         const duration = placeholderDuration / 2;
         setPlaceholderDuration(Math.max(duration, 30 * 60 * 1000));
+      }
+
+      if (e.key === 'i') {
+        calendar.setMode('insert');
+      }
+
+      if (e.key === 'Escape') {
+        calendar.setMode('normal');
       }
 
       [1, 2, 3, 4, 5, 6, 7, 8].forEach((key) => {

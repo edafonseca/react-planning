@@ -1,33 +1,41 @@
 "use client";
 
 import { ModifierListener } from "./modifier-listener";
-import { PlanningContext } from "./planning-context";
-import { Calendar } from "@/lib/planning/calendar";
-import { addDays, format, startOfWeek } from "date-fns";
+import { PlanningProvider, useCalendar } from "./planning-provider";
 import { DayRange } from "./day-range";
 import { PlanningContainer } from "./planning-container";
-
-const calendar = new Calendar();
+import { MouseListener } from "./mouse-listener";
+import { useEffect } from "react";
+import { Slot } from "@/lib/planning/slots/slot";
 
 export const Planning: React.FC = () => {
-  const today = new Date();
-  const start = startOfWeek(today, { weekStartsOn: 1 });
-  const showDays = 5;
-  const daysOfWeek = [];
+  const { calendar } = useCalendar();
 
-  for (let i = 0; i < showDays; i++) {
-    daysOfWeek.push(addDays(start, i));
-  }
+  useEffect(() => {
+    setTimeout(() => {
+      const day = calendar.getDays()[0];
+      const date = day.date;
+      date.setHours(10);
+      const slot = new Slot(date, 30 * 60 * 1000);
+      day.addSlot(slot);
+      console.log(slot, calendar);
+    }, 3000);
+  }, []);
 
   return (
-    <PlanningContext>
+    <>
       <ModifierListener />
+      <MouseListener />
       <div className="flex justify-content-stretch w-full h-screen">
         <PlanningContainer>
-          <DayRange key="a" calendar={calendar} date={today} />
-          <DayRange key="b" calendar={calendar} date={today} />
+          {calendar.getDays().map((day, i) => (
+            <DayRange
+              key={day.date.toString() + "-" + i}
+              day={day}
+            />
+          ))}
         </PlanningContainer>
       </div>
-    </PlanningContext>
+    </>
   );
 };

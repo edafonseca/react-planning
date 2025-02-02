@@ -34,6 +34,14 @@ export class Bucket {
     return diff.diff(this);
   }
 
+  public removeSlot(slot: ManipulableSlotInterface): Diff {
+    const diff = new Diff(this); 
+
+    this.slots = this.slots.filter((s) => !s.equals(slot));
+    
+    return diff.diff(this);
+  }
+
   public cut(slot: ManipulableSlotInterface): Diff {
     const diff = new Diff(this); 
 

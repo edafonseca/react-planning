@@ -6,11 +6,6 @@ import { SlotInterface } from "../slots/slot";
 import { ViewRangeInterface } from "./ViewrangeInterface";
 
 export class ViewRange implements ViewRangeInterface {
-  constructor(
-    public from: Date,
-    public to: Date,
-  ) {}
-
   getTo(slot: SlotInterface): Date {
     const untilEndOfDay = endOfDay(slot.from).getTime() - slot.from.getTime();
 

@@ -12,8 +12,8 @@ export class WorkingHoursRange extends ViewRange {
   private readonly morning = [8 * 60, 12 * 60];
   private readonly afternoon = [14 * 60, 18 * 60];
 
-  constructor(from: Date, to: Date) {
-    super(from, to);
+  roundDate(date: Date, roundMinutes: number = 15): Date {
+    
   }
 
   getDateFromRelativePosition(p: number, from: Date = new Date(), rounding: 'floor' | 'ceil' = 'floor', roundMinutes: number = 15): Date {
